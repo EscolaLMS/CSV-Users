@@ -1,0 +1,36 @@
+{
+    "name": "escolalms/csv-users",
+    "description": "Escola Headless LMS CSV Users",
+    "type": "package",
+    "require": {
+      "php": ">=7.4",
+      "escolalms/auth": "^0",
+      "laravel/framework": ">=8.0",
+      "maatwebsite/excel": "^3.1"
+    },
+    "require-dev": {
+      "phpunit/phpunit": "^9.0",
+      "orchestra/testbench": "^6.0"
+    },
+    "license": "MIT",
+    "authors": [
+      {
+        "name": "Maciej Rymarz",
+        "email": "maciej.rymarz@escolasoft.com"
+      }
+    ],
+    "autoload": {
+        "psr-4": {
+            "EscolaLms\\CsvUsers\\": "src",
+            "EscolaLms\\CsvUsers\\Tests\\": "tests",
+            "EscolaLms\\CsvUsers\\Database\\Seeders\\": "database/seeders"
+        }
+    },
+    "extra": {
+      "laravel": {
+        "providers": [
+          "EscolaLms\\CsvUsers\\EscolaLmsCsvUsersServiceProvider"
+        ]
+      }
+    }
+}
