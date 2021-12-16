@@ -2,7 +2,7 @@
 
 namespace EscolaLms\CsvUsers;
 
-use EscolaLms\Auth\Models\User;
+use EscolaLms\CsvUsers\Models\User;
 use EscolaLms\CsvUsers\Policies\CsvUsersPolicy;
 use Illuminate\Foundation\Support\Providers\AuthServiceProvider as ServiceProvider;
 use Laravel\Passport\Passport;

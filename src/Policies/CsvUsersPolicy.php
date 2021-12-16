@@ -2,8 +2,8 @@
 
 namespace EscolaLms\CsvUsers\Policies;
 
+use Illuminate\Foundation\Auth\User;
 use EscolaLms\Core\Enums\UserRole;
-use EscolaLms\Core\Models\User;
 use EscolaLms\CsvUsers\Enums\CsvUserPermissionsEnum;
 use Illuminate\Auth\Access\HandlesAuthorization;
 

@@ -3,7 +3,7 @@
 namespace EscolaLms\CsvUsers\Http\Requests;
 
 use EscolaLms\Auth\Http\Requests\Admin\UsersListRequest;
-use EscolaLms\Auth\Models\User;
+use EscolaLms\CsvUsers\Models\User;
 
 class ExportUsersToCsvAPIRequest extends UsersListRequest
 {

@@ -25,7 +25,8 @@ class CsvUserAPIController extends EscolaLmsBaseController implements CsvUserAPI
         $userFilterDto = UserFilterCriteriaDto::instantiateFromRequest($request);
 
         return Excel::download(
-            new UsersExport($this->csvUserService->getDataToExport($userFilterDto)), 'users.csv'
+            new UsersExport($this->csvUserService->getDataToExport($userFilterDto)),
+            'users.csv'
         );
     }
 }

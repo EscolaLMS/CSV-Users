@@ -2,66 +2,40 @@
 
 namespace EscolaLms\CsvUsers\Export;
 
-use EscolaLms\Auth\Enums\GenderType;
-use Illuminate\Contracts\Auth\Authenticatable;
+use EscolaLms\Auth\Http\Resources\UserResource;
 use Illuminate\Support\Collection;
 use Maatwebsite\Excel\Concerns\FromCollection;
 use Maatwebsite\Excel\Concerns\WithHeadings;
 
 class UsersExport implements FromCollection, WithHeadings
 {
-    private Collection $users;
+    private array $usersArray;
+    private array $keys = [];
 
     public function __construct(Collection $users)
     {
-        $this->users = $users;
+        $this->usersArray = json_decode(UserResource::collection($users)->toJson(), true);
+
+        foreach ($this->usersArray as $user) {
+            $this->keys = array_merge($this->keys, array_keys($user));
+        }
+
+        $this->keys = array_unique($this->keys);
     }
 
     public function collection(): Collection
     {
-        return $this->users
-            ->map(fn(Authenticatable $user) => [
-                $user->getKey(),
-                $user->first_name,
-                $user->last_name,
-                $user->email,
-                $user->age,
-                GenderType::getName($user->gender),
-                $user->country,
-                $user->city,
-                $user->street,
-                $user->postcode,
-                $user->is_active ? __('Active') : __('Inactive'),
-                $user->onboarding_completed ? __('Completed') : __('Waiting'),
-                $this->getRoles($user),
-                $user->created_at,
-                $user->updated_at
-            ]);
+        return collect($this->usersArray)->map(function ($user) {
+            foreach ($this->keys as $key) {
+                $result[$key] = $user[$key] ?? '';
+            }
+
+            return $result;
+        });
     }
 
     public function headings(): array
     {
-        return [
-            __('Sl.no'),
-            __('First Name'),
-            __('Last Name'),
-            __('Email'),
-            __('Age'),
-            __('Gender'),
-            __('Country'),
-            __('City'),
-            __('Street'),
-            __('Postcode'),
-            __('Status'),
-            __('Onboarding'),
-            __('Roles'),
-            __('Created at'),
-            __('Updated at'),
-        ];
-    }
-
-    private function getRoles(Authenticatable $user): string
-    {
-        return implode(', ', $user->getRoleNames()->toArray());
+        return $this->keys;
     }
 }

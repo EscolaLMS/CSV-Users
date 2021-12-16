@@ -7,5 +7,5 @@ use Illuminate\Support\Collection;
 
 interface CsvUserServiceContract
 {
-   public function getDataToExport(UserFilterCriteriaDto $userFilterCriteriaDto): Collection;
+    public function getDataToExport(UserFilterCriteriaDto $userFilterCriteriaDto): Collection;
 }
