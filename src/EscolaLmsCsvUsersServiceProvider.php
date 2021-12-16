@@ -6,6 +6,9 @@ use EscolaLms\CsvUsers\Services\Contracts\CsvUserServiceContract;
 use EscolaLms\CsvUsers\Services\CsvUserService;
 use Illuminate\Support\ServiceProvider;
 
+/**
+ * SWAGGER_VERSION
+ */
 class EscolaLmsCsvUsersServiceProvider extends ServiceProvider
 {
     public $singletons = [
