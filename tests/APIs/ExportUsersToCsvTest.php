@@ -63,8 +63,8 @@ class ExportUsersToCsvTest extends TestCase
 
         Excel::assertDownloaded('users.csv', function (UsersExport $export) use ($user, $user2, $admin) {
             return $export->collection()->contains('email', $user->email)
-                && $export->collection()->doesntContain('email', $user2->email)
-                && $export->collection()->doesntContain('email', $admin->email);
+                && !$export->collection()->contains('email', $user2->email)
+                && !$export->collection()->contains('email', $admin->email);
         });
 
         $response = $this->actingAs($admin)
@@ -72,8 +72,8 @@ class ExportUsersToCsvTest extends TestCase
         $response->assertOk();
 
         Excel::assertDownloaded('users.csv', function (UsersExport $export) use ($user, $user2, $admin) {
-            return $export->collection()->doesntContain('email', $user->email)
-                && $export->collection()->doesntContain('email', $user2->email)
+            return !$export->collection()->contains('email', $user->email)
+                && !$export->collection()->contains('email', $user2->email)
                 && $export->collection()->contains('email', $admin->email);
         });
 
@@ -82,9 +82,9 @@ class ExportUsersToCsvTest extends TestCase
         $response->assertOk();
 
         Excel::assertDownloaded('users.csv', function (UsersExport $export) use ($user, $user2, $admin) {
-            return $export->collection()->doesntContain('email', $user->email)
-                && $export->collection()->doesntContain('email', $user2->email)
-                && $export->collection()->doesntContain('email', $admin->email);
+            return $export->collection()->contains('email', $user->email)
+                && !$export->collection()->contains('email', $user2->email)
+                && !$export->collection()->contains('email', $admin->email);
         });
     }
 }
