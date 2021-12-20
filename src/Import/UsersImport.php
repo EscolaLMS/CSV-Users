@@ -22,6 +22,19 @@ class UsersImport implements ToCollection, WithHeadingRow
         }
     }
 
+    public function rules(): array
+    {
+        return [
+            '*.email' => 'required',
+            '*.first_name' => 'required',
+            '*.last_name' => 'required',
+            '*.roles' => ['nullable', 'array'],
+            '*.roles.*' => ['exists:roles,name'],
+            '*.permissions' => ['nullable', 'array'],
+            '*.permissions.*' => ['exists:permissions,name'],
+        ];
+    }
+
     private function prepareDataToImport(Collection $data): Collection
     {
         return $data->map(function ($item) {
@@ -41,14 +54,6 @@ class UsersImport implements ToCollection, WithHeadingRow
 
     private function validateData(Collection $data)
     {
-        Validator::make($data->toArray(), [
-            '*.email' => 'required',
-            '*.first_name' => 'required',
-            '*.last_name' => 'required',
-            '*.roles' => ['nullable', 'array'],
-            '*.roles.*' => ['exists:roles,name'],
-            '*.permissions' => ['nullable', 'array'],
-            '*.permissions.*' => ['exists:permissions,name'],
-        ])->validate();
+        Validator::make($data->toArray(), $this->rules())->validate();
     }
 }
