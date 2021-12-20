@@ -3,6 +3,7 @@
 namespace EscolaLms\CsvUsers\Http\Controllers\Swagger;
 
 use EscolaLms\CsvUsers\Http\Requests\ExportUsersToCsvAPIRequest;
+use EscolaLms\CsvUsers\Http\Requests\ImportUsersFromCsvAPIRequest;
 
 interface CsvUserAPISwagger
 {
@@ -86,4 +87,46 @@ interface CsvUserAPISwagger
      *   )
      */
     public function export(ExportUsersToCsvAPIRequest $request);
+
+    /**
+     * @OA\Post(
+     *      tags={"Admin CSV"},
+     *      path="/api/admin/csv/users",
+     *      description="Imports users from csv",
+     *      security={
+     *          {"passport": {}},
+     *      },
+     *      @OA\RequestBody(
+     *          required=true,
+     *          @OA\MediaType(
+     *              mediaType="multipart/form-data",
+     *              @OA\Schema(
+     *                  type="object",
+     *                  @OA\Property(
+     *                      property="file",
+     *                      type="file",
+     *                      format="file",
+     *                  )
+     *              )
+     *          )
+     *      ),
+     *     @OA\Response(
+     *          response=200,
+     *          description="successful operation",
+     *      ),
+     *     @OA\Response(
+     *          response=401,
+     *          description="endpoint requires authentication",
+     *      ),
+     *     @OA\Response(
+     *          response=403,
+     *          description="user doesn't have required access rights",
+     *      ),
+     *     @OA\Response(
+     *          response=500,
+     *          description="server-side error",
+     *      ),
+     * )
+     */
+    public function import(ImportUsersFromCsvAPIRequest $request);
 }
