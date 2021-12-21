@@ -23,4 +23,17 @@ class CsvUsersPolicy
 
         return false;
     }
+
+    public function import(User $user): bool
+    {
+        if ($user->hasRole(UserRole::ADMIN)) {
+            return true;
+        }
+
+        if ($user->can(CsvUserPermissionsEnum::CSV_USERS_IMPORT)) {
+            return true;
+        }
+
+        return false;
+    }
 }

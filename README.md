@@ -29,5 +29,5 @@ There are two endpoints defined in this package.
    4. `onboarding={boolean}` will check if user completed onboarding
    5. `from={datetime}` will check if user created after this date
    6. `to={datetime}` will check if user created before this date
-2. (to be implemented) `POST /api/admin/csv/users` imports users from `.csv` file
+2. `POST /api/admin/csv/users` imports users from `.csv` file
    
