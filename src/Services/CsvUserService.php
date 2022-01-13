@@ -4,6 +4,7 @@ namespace EscolaLms\CsvUsers\Services;
 
 use EscolaLms\Auth\Dtos\UserFilterCriteriaDto;
 use EscolaLms\Auth\Repositories\Contracts\UserRepositoryContract;
+use EscolaLms\CsvUsers\Events\EscolaLmsNewUserImportedTemplateEvent;
 use EscolaLms\CsvUsers\Services\Contracts\CsvUserServiceContract;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Collection;
@@ -27,7 +28,11 @@ class CsvUserService implements CsvUserServiceContract
         if ($user = $this->userRepository->findByEmail($data->get('email'))) {
             $user = $this->userRepository->update($data->toArray(), $user->getKey());
         } else {
+            $data['is_active'] = true;
+
             $user = $this->userRepository->create($data->toArray());
+            $user->markEmailAsVerified();
+            event(new EscolaLmsNewUserImportedTemplateEvent($user));
         }
 
         $user->syncRoles($data->get('roles'));

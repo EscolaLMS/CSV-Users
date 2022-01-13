@@ -5,12 +5,15 @@ namespace EscolaLms\CsvUsers\Tests\APIs;
 use EscolaLms\Core\Enums\UserRole;
 use EscolaLms\Core\Tests\CreatesUsers;
 use EscolaLms\CsvUsers\Enums\CsvUserPermissionsEnum;
+use EscolaLms\CsvUsers\Events\EscolaLmsNewUserImportedTemplateEvent;
 use EscolaLms\CsvUsers\Import\UsersImport;
 use EscolaLms\CsvUsers\Tests\Models\User;
 use EscolaLms\CsvUsers\Tests\TestCase;
 use Illuminate\Foundation\Testing\WithFaker;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Collection;
+use Illuminate\Support\Facades\Event;
+use Illuminate\Support\Facades\Notification;
 use Illuminate\Support\Facades\Validator;
 use Maatwebsite\Excel\Facades\Excel;
 
@@ -66,12 +69,12 @@ class ImportUsersFromCsvTest extends TestCase
         ]);
         $response->assertOk();
 
-        Excel::assertImported('users.csv', function(UsersImport $import) use ($importData) {
+        Excel::assertImported('users.csv', function (UsersImport $import) use ($importData) {
             $import->collection($importData);
             return true;
         });
 
-        $importData->each(function($user) {
+        $importData->each(function ($user) {
             $this->assertDatabaseHas('users', [
                 'email' => $user->get('email'),
                 'first_name' => $user->get('first_name'),
@@ -100,11 +103,43 @@ class ImportUsersFromCsvTest extends TestCase
         ]);
         $response->assertOk();
 
-        Excel::assertImported('users.csv', function(UsersImport $import) use ($invalidImportData) {
+        Excel::assertImported('users.csv', function (UsersImport $import) use ($invalidImportData) {
             $validator = Validator::make($invalidImportData->toArray(), $import->rules());
             $this->assertTrue($validator->fails());
             return true;
         });
+    }
+
+    public function testDispatchNewUserImportedTemplateEvent(): void
+    {
+        Event::fake();
+        Notification::fake();
+
+        $userToImport = collect([
+            'email' => $this->faker->email,
+            'first_name' => $this->faker->firstName,
+            'last_name' => $this->faker->lastName,
+        ]);
+
+        $admin = $this->makeAdmin();
+        $response = $this->actingAs($admin, 'api')->postJson('/api/admin/csv/users', [
+            'file' => UploadedFile::fake()->create('users.csv'),
+        ]);
+        $response->assertOk();
+
+        Excel::assertImported('users.csv', function (UsersImport $import) use ($userToImport) {
+            $import->collection(collect([$userToImport]));
+            return true;
+        });
+
+        Event::assertDispatched(EscolaLmsNewUserImportedTemplateEvent::class,
+            function (EscolaLmsNewUserImportedTemplateEvent $event) use ($userToImport) {
+                $eventUser = $event->getUser();
+                return
+                    $eventUser->email === $userToImport['email']
+                    && $eventUser->is_active
+                    && $eventUser->hasVerifiedEmail();
+            });
     }
 
     private function prepareImportData(): Collection

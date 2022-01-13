@@ -48,6 +48,8 @@ class UsersImport implements ToCollection, WithHeadingRow
                 : []
             );
 
+            $item->put('is_active', $item->get('is_active') ?? false);
+
             return $item;
         });
     }
