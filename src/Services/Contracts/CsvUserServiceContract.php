@@ -10,5 +10,5 @@ interface CsvUserServiceContract
 {
     public function getDataToExport(UserFilterCriteriaDto $userFilterCriteriaDto): Collection;
 
-    public function saveUserFromImport(Collection $data): Model;
+    public function saveUserFromImport(Collection $data, string $returnUrl): Model;
 }

@@ -106,7 +106,13 @@ interface CsvUserAPISwagger
      *                      property="file",
      *                      type="file",
      *                      format="file",
-     *                  )
+     *                  ),
+     *                  @OA\Property(
+     *                      property="return_url",
+     *                      type="string",
+     *                      example="https://escolalms.com/set-password",
+     *                      description="Address where the new user set the password"
+     *                 ),
      *              )
      *          )
      *      ),
