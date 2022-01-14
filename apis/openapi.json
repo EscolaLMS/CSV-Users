@@ -108,6 +108,11 @@
                                     "file": {
                                         "type": "file",
                                         "format": "file"
+                                    },
+                                    "return_url": {
+                                        "description": "Address where the new user set the password",
+                                        "type": "string",
+                                        "example": "https://escolalms.com/set-password"
                                     }
                                 },
                                 "type": "object"
