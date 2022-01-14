@@ -141,10 +141,12 @@ class ImportUsersFromCsvTest extends TestCase
         Event::assertDispatched(EscolaLmsImportedNewUserTemplateEvent::class,
             function (EscolaLmsImportedNewUserTemplateEvent $event) use ($userToImport) {
                 $eventUser = $event->getUser();
-                return
-                    $eventUser->email === $userToImport['email']
-                    && $eventUser->is_active
-                    && $eventUser->hasVerifiedEmail();
+                $this->assertEquals($userToImport['email'], $eventUser->email);
+                $this->assertTrue($eventUser->is_active);
+                $this->assertTrue($eventUser->hasVerifiedEmail());
+                $this->assertEquals('http://localhost/set-password', $event->getReturnUrl());
+
+                return true;
             });
     }
 
