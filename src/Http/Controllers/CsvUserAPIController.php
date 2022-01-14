@@ -35,7 +35,7 @@ class CsvUserAPIController extends EscolaLmsBaseController implements CsvUserAPI
 
     public function import(ImportUsersFromCsvAPIRequest $request): JsonResponse
     {
-        Excel::import(new UsersImport, $request->file('file'));
+        Excel::import(new UsersImport($request->input('return_url')), $request->file('file'));
 
         return $this->sendSuccess('successful operation');
     }

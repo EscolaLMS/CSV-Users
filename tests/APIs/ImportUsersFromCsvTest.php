@@ -5,7 +5,7 @@ namespace EscolaLms\CsvUsers\Tests\APIs;
 use EscolaLms\Core\Enums\UserRole;
 use EscolaLms\Core\Tests\CreatesUsers;
 use EscolaLms\CsvUsers\Enums\CsvUserPermissionsEnum;
-use EscolaLms\CsvUsers\Events\EscolaLmsNewUserImportedTemplateEvent;
+use EscolaLms\CsvUsers\Events\EscolaLmsImportedNewUserTemplateEvent;
 use EscolaLms\CsvUsers\Import\UsersImport;
 use EscolaLms\CsvUsers\Tests\Models\User;
 use EscolaLms\CsvUsers\Tests\TestCase;
@@ -38,6 +38,7 @@ class ImportUsersFromCsvTest extends TestCase
         $admin = $this->makeAdmin();
         $response = $this->actingAs($admin, 'api')->postJson('/api/admin/csv/users', [
             'file' => UploadedFile::fake()->create('users.csv'),
+            'return_url' => 'http://localhost/set-password',
         ]);
         $response->assertOk();
 
@@ -46,6 +47,7 @@ class ImportUsersFromCsvTest extends TestCase
         $tutor = $this->makeInstructor();
         $response = $this->actingAs($tutor, 'api')->postJson('/api/admin/csv/users', [
             'file' => UploadedFile::fake()->create('users.csv'),
+            'return_url' => 'http://localhost/set-password',
         ]);
         $response->assertForbidden();
 
@@ -53,6 +55,7 @@ class ImportUsersFromCsvTest extends TestCase
 
         $response = $this->actingAs($tutor, 'api')->postJson('/api/admin/csv/users', [
             'file' => UploadedFile::fake()->create('users.csv'),
+            'return_url' => 'http://localhost/set-password',
         ]);
         $response->assertOk();
 
@@ -66,6 +69,7 @@ class ImportUsersFromCsvTest extends TestCase
         $admin = $this->makeAdmin();
         $response = $this->actingAs($admin, 'api')->postJson('/api/admin/csv/users', [
             'file' => UploadedFile::fake()->create('users.csv'),
+            'return_url' => 'http://localhost/set-password',
         ]);
         $response->assertOk();
 
@@ -100,6 +104,7 @@ class ImportUsersFromCsvTest extends TestCase
         $admin = $this->makeAdmin();
         $response = $this->actingAs($admin, 'api')->postJson('/api/admin/csv/users', [
             'file' => UploadedFile::fake()->create('users.csv'),
+            'return_url' => 'http://localhost/set-password',
         ]);
         $response->assertOk();
 
@@ -124,6 +129,7 @@ class ImportUsersFromCsvTest extends TestCase
         $admin = $this->makeAdmin();
         $response = $this->actingAs($admin, 'api')->postJson('/api/admin/csv/users', [
             'file' => UploadedFile::fake()->create('users.csv'),
+            'return_url' => 'http://localhost/set-password',
         ]);
         $response->assertOk();
 
@@ -132,8 +138,8 @@ class ImportUsersFromCsvTest extends TestCase
             return true;
         });
 
-        Event::assertDispatched(EscolaLmsNewUserImportedTemplateEvent::class,
-            function (EscolaLmsNewUserImportedTemplateEvent $event) use ($userToImport) {
+        Event::assertDispatched(EscolaLmsImportedNewUserTemplateEvent::class,
+            function (EscolaLmsImportedNewUserTemplateEvent $event) use ($userToImport) {
                 $eventUser = $event->getUser();
                 return
                     $eventUser->email === $userToImport['email']

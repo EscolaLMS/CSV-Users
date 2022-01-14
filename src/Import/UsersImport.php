@@ -10,6 +10,13 @@ use Maatwebsite\Excel\Concerns\WithHeadingRow;
 
 class UsersImport implements ToCollection, WithHeadingRow
 {
+    private string $returnUrl;
+
+    public function __construct(string $returnUrl)
+    {
+        $this->returnUrl = $returnUrl;
+    }
+
     public function collection(Collection $rows): void
     {
         $csvUserService = app(CsvUserServiceContract::class);
@@ -18,7 +25,7 @@ class UsersImport implements ToCollection, WithHeadingRow
         $this->validateData($rows);
 
         foreach ($rows as $row) {
-            $csvUserService->saveUserFromImport($row);
+            $csvUserService->saveUserFromImport($row, $this->returnUrl);
         }
     }
 

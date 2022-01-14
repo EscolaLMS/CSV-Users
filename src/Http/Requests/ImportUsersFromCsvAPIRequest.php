@@ -16,6 +16,7 @@ class ImportUsersFromCsvAPIRequest extends FormRequest
     {
         return [
             'file' => ['required', 'mimes:csv'],
+            'return_url' => ['required', 'string'],
         ];
     }
 }
