@@ -6,12 +6,13 @@ use EscolaLms\Core\Enums\UserRole;
 use EscolaLms\Core\Tests\CreatesUsers;
 use EscolaLms\CsvUsers\Export\UsersExport;
 use EscolaLms\CsvUsers\Tests\TestCase;
+use Illuminate\Foundation\Testing\DatabaseTransactions;
 use Illuminate\Foundation\Testing\WithFaker;
 use Maatwebsite\Excel\Facades\Excel;
 
 class ExportUsersToCsvTest extends TestCase
 {
-    use CreatesUsers, WithFaker;
+    use CreatesUsers, WithFaker, DatabaseTransactions;
 
     protected function setUp(): void
     {
