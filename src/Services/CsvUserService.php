@@ -3,11 +3,13 @@
 namespace EscolaLms\CsvUsers\Services;
 
 use EscolaLms\Auth\Dtos\UserFilterCriteriaDto;
+use EscolaLms\Auth\EscolaLmsAuthServiceProvider;
 use EscolaLms\Auth\Repositories\Contracts\UserRepositoryContract;
 use EscolaLms\CsvUsers\Events\EscolaLmsImportedNewUserTemplateEvent;
 use EscolaLms\CsvUsers\Services\Contracts\CsvUserServiceContract;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Collection;
+use Illuminate\Support\Facades\Config;
 
 class CsvUserService implements CsvUserServiceContract
 {
@@ -28,8 +30,7 @@ class CsvUserService implements CsvUserServiceContract
         if ($user = $this->userRepository->findByEmail($data->get('email'))) {
             $user = $this->userRepository->update($data->toArray(), $user->getKey());
         } else {
-            $data['is_active'] = true;
-
+            $data->put('is_active', true);
             $user = $this->userRepository->create($data->toArray());
             $user->markEmailAsVerified();
             event(new EscolaLmsImportedNewUserTemplateEvent($user, $returnUrl));
@@ -37,6 +38,14 @@ class CsvUserService implements CsvUserServiceContract
 
         $user->syncRoles($data->get('roles'));
         $user->syncPermissions($data->get('permissions'));
+
+        $additionalFields = Config::get(EscolaLmsAuthServiceProvider::CONFIG_KEY . '.additional_fields', []);
+
+        foreach ($additionalFields as $field) {
+            if ($data->has($field)) {
+                $this->userRepository->updateSettings($user, ["additional_field:$field" => $data->get($field)]);
+            }
+        }
 
         return $user;
     }
