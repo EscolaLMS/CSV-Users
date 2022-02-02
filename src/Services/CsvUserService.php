@@ -30,8 +30,7 @@ class CsvUserService implements CsvUserServiceContract
         if ($user = $this->userRepository->findByEmail($data->get('email'))) {
             $user = $this->userRepository->update($data->toArray(), $user->getKey());
         } else {
-            $data['is_active'] = true;
-
+            $data->put('is_active', true);
             $user = $this->userRepository->create($data->toArray());
             $user->markEmailAsVerified();
             event(new EscolaLmsImportedNewUserTemplateEvent($user, $returnUrl));
@@ -44,7 +43,7 @@ class CsvUserService implements CsvUserServiceContract
 
         foreach ($additionalFields as $field) {
             if ($data->has($field)) {
-                $this->userRepository->updateSettings($user, ["additional_field:$field" => $data[$field]]);
+                $this->userRepository->updateSettings($user, ["additional_field:$field" => $data->get($field)]);
             }
         }
 
