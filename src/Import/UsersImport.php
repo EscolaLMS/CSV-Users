@@ -4,6 +4,7 @@ namespace EscolaLms\CsvUsers\Import;
 
 use EscolaLms\CsvUsers\Services\Contracts\CsvUserServiceContract;
 use Illuminate\Support\Collection;
+use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Validator;
 use Maatwebsite\Excel\Concerns\ToCollection;
 use Maatwebsite\Excel\Concerns\WithHeadingRow;
@@ -56,6 +57,13 @@ class UsersImport implements ToCollection, WithHeadingRow
             );
 
             $item->put('is_active', $item->get('is_active') ?? false);
+            $item->forget('created_at');
+            $item->forget('updated_at');
+
+            $item->put('path_avatar', $item->get('path_avatar') !== null && Storage::exists($item->get('path_avatar'))
+                ? $item->get('path_avatar')
+                : null
+            );
 
             return $item;
         });

@@ -9,6 +9,7 @@ use EscolaLms\CsvUsers\Events\EscolaLmsImportedNewUserTemplateEvent;
 use EscolaLms\CsvUsers\Import\UsersImport;
 use EscolaLms\CsvUsers\Tests\Models\User;
 use EscolaLms\CsvUsers\Tests\TestCase;
+use Illuminate\Foundation\Testing\DatabaseTransactions;
 use Illuminate\Foundation\Testing\WithFaker;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Collection;
@@ -19,7 +20,7 @@ use Maatwebsite\Excel\Facades\Excel;
 
 class ImportUsersFromCsvTest extends TestCase
 {
-    use CreatesUsers, WithFaker;
+    use CreatesUsers, WithFaker, DatabaseTransactions;
 
     protected function setUp(): void
     {
@@ -86,6 +87,7 @@ class ImportUsersFromCsvTest extends TestCase
             ]);
 
             $dbUser = User::where('email', $user->get('email'))->firstOrFail();
+            $this->assertNotNull($dbUser->created_at);
             $this->assertEqualsCanonicalizing($dbUser->roles->pluck('name')->toArray(), $user->get('roles'));
             $this->assertEqualsCanonicalizing($dbUser->permissions->pluck('name')->toArray(), $user->get('permissions'));
         });
@@ -176,6 +178,7 @@ class ImportUsersFromCsvTest extends TestCase
                 'email' => $this->faker->email,
                 'first_name' => $this->faker->firstName,
                 'last_name' => $this->faker->lastName,
+                'created_at' => '',
             ]));
         }
 
