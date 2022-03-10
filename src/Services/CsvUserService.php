@@ -39,14 +39,6 @@ class CsvUserService implements CsvUserServiceContract
         $user->syncRoles($data->get('roles'));
         $user->syncPermissions($data->get('permissions'));
 
-        $additionalFields = Config::get(EscolaLmsAuthServiceProvider::CONFIG_KEY . '.additional_fields', []);
-
-        foreach ($additionalFields as $field) {
-            if ($data->has($field)) {
-                $this->userRepository->updateSettings($user, ["additional_field:$field" => $data->get($field)]);
-            }
-        }
-
         return $user;
     }
 }

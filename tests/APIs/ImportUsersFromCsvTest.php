@@ -2,6 +2,7 @@
 
 namespace EscolaLms\CsvUsers\Tests\APIs;
 
+use EscolaLms\Auth\Models\User as AuthUser;
 use EscolaLms\Core\Enums\UserRole;
 use EscolaLms\Core\Tests\CreatesUsers;
 use EscolaLms\CsvUsers\Enums\CsvUserPermissionsEnum;
@@ -9,6 +10,8 @@ use EscolaLms\CsvUsers\Events\EscolaLmsImportedNewUserTemplateEvent;
 use EscolaLms\CsvUsers\Import\UsersImport;
 use EscolaLms\CsvUsers\Tests\Models\User;
 use EscolaLms\CsvUsers\Tests\TestCase;
+use EscolaLms\ModelFields\Enum\MetaFieldVisibilityEnum;
+use EscolaLms\ModelFields\Facades\ModelFields;
 use Illuminate\Foundation\Testing\DatabaseTransactions;
 use Illuminate\Foundation\Testing\WithFaker;
 use Illuminate\Http\UploadedFile;
@@ -150,6 +153,60 @@ class ImportUsersFromCsvTest extends TestCase
 
                 return true;
             });
+    }
+
+    public function testUserImportWithAdditionalFields(): void
+    {
+        ModelFields::addOrUpdateMetadataField(
+            AuthUser::class,
+            'public_additional_field',
+            'varchar',
+            '',
+        );
+
+        ModelFields::addOrUpdateMetadataField(
+            AuthUser::class,
+            'boolean_additional_field',
+            'boolean',
+            '',
+        );
+
+        ModelFields::addOrUpdateMetadataField(
+            AuthUser::class,
+            'admin_additional_field',
+            'varchar',
+            '',
+            ['string', 'max:255'],
+            MetaFieldVisibilityEnum::ADMIN
+        );
+
+        $email = $this->faker->email;
+        $studentData = collect([
+            'email' => $email,
+            'first_name' => $this->faker->firstName,
+            'last_name' => $this->faker->lastName,
+            'public_additional_field' => 'public string',
+            'admin_additional_field' => 'secret string',
+            'boolean_additional_field' => false,
+        ]);
+
+        $admin = $this->makeAdmin();
+        $response = $this->actingAs($admin, 'api')->postJson('/api/admin/csv/users', [
+            'file' => UploadedFile::fake()->create('users.csv'),
+            'return_url' => 'http://localhost/set-password',
+        ]);
+        $response->assertOk();
+
+        Excel::assertImported('users.csv', function (UsersImport $import) use ($studentData) {
+            $import->collection(collect([$studentData]));
+
+            return true;
+        });
+
+        $user = User::where('email', $email)->first();
+        $this->assertEquals('public string', $user->public_additional_field);
+        $this->assertEquals('secret string', $user->admin_additional_field);
+        $this->assertFalse($user->boolean_additional_field);
     }
 
     private function prepareImportData(): Collection

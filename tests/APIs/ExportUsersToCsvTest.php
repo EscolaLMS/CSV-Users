@@ -2,10 +2,13 @@
 
 namespace EscolaLms\CsvUsers\Tests\APIs;
 
+use EscolaLms\Auth\Models\User;
 use EscolaLms\Core\Enums\UserRole;
 use EscolaLms\Core\Tests\CreatesUsers;
 use EscolaLms\CsvUsers\Export\UsersExport;
 use EscolaLms\CsvUsers\Tests\TestCase;
+use EscolaLms\ModelFields\Enum\MetaFieldVisibilityEnum;
+use EscolaLms\ModelFields\Facades\ModelFields;
 use Illuminate\Foundation\Testing\DatabaseTransactions;
 use Illuminate\Foundation\Testing\WithFaker;
 use Maatwebsite\Excel\Facades\Excel;
@@ -86,6 +89,43 @@ class ExportUsersToCsvTest extends TestCase
             return $export->collection()->contains('email', $user->email)
                 && !$export->collection()->contains('email', $user2->email)
                 && !$export->collection()->contains('email', $admin->email);
+        });
+    }
+
+    public function testExportUsersToCsvWithAdditionalFields(): void
+    {
+        ModelFields::addOrUpdateMetadataField(
+            User::class,
+            'public_additional_field',
+            'varchar',
+            '',
+            ['required', 'string', 'max:255'],
+        );
+
+        ModelFields::addOrUpdateMetadataField(
+            User::class,
+            'admin_additional_field',
+            'varchar',
+            '',
+            ['required', 'string', 'max:255'],
+            MetaFieldVisibilityEnum::ADMIN
+        );
+
+        $admin = $this->makeAdmin([
+            'first_name' => $this->faker->firstName,
+            'public_additional_field' => 'public string',
+            'admin_additional_field' => 'secret string',
+        ]);
+
+        $response = $this->actingAs($admin, 'api')->getJson('/api/admin/csv/users');
+        $response->assertOk();
+
+        Excel::assertDownloaded('users.csv', function (UsersExport $export) use ($admin) {
+            $this->assertTrue($export->collection()->contains('email', $admin->email));
+            $this->assertTrue($export->collection()->contains('public_additional_field', 'public string'));
+            $this->assertTrue($export->collection()->contains('admin_additional_field', 'secret string'));
+
+            return true;
         });
     }
 }
