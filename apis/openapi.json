@@ -28,12 +28,7 @@
                         "description": "user role",
                         "required": false,
                         "schema": {
-                            "type": "string",
-                            "enum": [
-                                "admin",
-                                "tutor",
-                                "student"
-                            ]
+                            "type": "string"
                         }
                     },
                     {
