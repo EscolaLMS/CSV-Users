@@ -1,7 +1,5 @@
 # CSV-Users
 
-This package is responsible for exporting and importing users in `.csv` format
-
 [![swagger](https://img.shields.io/badge/documentation-swagger-green)](https://escolalms.github.io/CSV-Users/)
 [![codecov](https://codecov.io/gh/EscolaLMS/CSV-Users/branch/main/graph/badge.svg?token=NRAN4R8AGZ)](https://codecov.io/gh/EscolaLMS/CSV-Users)
 [![phpunit](https://github.com/EscolaLMS/CSV-Users/actions/workflows/test.yml/badge.svg)](https://github.com/EscolaLMS/CSV-Users/actions/workflows/test.yml)
@@ -11,23 +9,47 @@ This package is responsible for exporting and importing users in `.csv` format
 [![Maintainability](https://api.codeclimate.com/v1/badges/04a88ff03ede597fd18b/maintainability)](https://codeclimate.com/github/EscolaLMS/CSV-Users/maintainability)
 [![Test Coverage](https://api.codeclimate.com/v1/badges/04a88ff03ede597fd18b/test_coverage)](https://codeclimate.com/github/EscolaLMS/CSV-Users/test_coverage)
 
+## What does it do
+
+This package is used to export and import users in the `.csv` format. 
 
 ## Installation
 
-```
-composer require escolalms/csv-users
-```
+- `composer require escolalms/csv-users`
+- `php artisan db:seed --class="EscolaLms\CsvUsers\Database\Seeders\CsvUsersPermissionSeeder"`
 
-## API
+## Example
 
-There are two endpoints defined in this package.
+|id |name             |first_name|last_name|email             |country|is_active|created_at                 |onboarding_completed|email_verified|interests|avatar                                                         |roles    |permissions         |path_avatar           |contact |bio |
+|---|-----------------|----------|---------|------------------|-------|---------|---------------------------|--------------------|--------------|---------|---------------------------------------------------------------|---------|--------------------|----------------------|--------|----|
+|16 |Valentine Wehnner|Valentine |Wehnner  |jhyatt@example.net|Poland |         |2021-10-14T15:50:28.000000Z|TRUE                |TRUE          |LMS      |localhost/storage/avatars/16/logo.png                          |["tutor"]|["access dashboard"]|avatars/16/logo.png   |1234567 |bio |
 
-1. `GET /api/admin/csv/users` returns `.csv` file with users; you can pass following query parameters to this endpoint:
-   1. `search={string}` will search through first_name, last_name and email
-   2. `role={string}` will search by user roles
-   3. `status={boolean}` will check if user is_active
-   4. `onboarding={boolean}` will check if user completed onboarding
-   5. `from={datetime}` will check if user created after this date
-   6. `to={datetime}` will check if user created before this date
-2. `POST /api/admin/csv/users` imports users from `.csv` file
-   
+- Export uses fields from `EscolaLms\Auth\Http\Resources\UserFullResource`
+
+- Import uses the `update` or `create` method from `EscolaLms\Auth\Repositories\Contracts\UserRepositoryContract`.
+If the email exists in the database, the user's data is updated. Otherwise, a new user is created.
+
+## Endpoints
+
+All the endpoints are defined in [![swagger](https://img.shields.io/badge/documentation-swagger-green)](https://escolalms.github.io/CSV-Users/)
+
+## Tests
+
+Run `./vendor/bin/phpunit` to run tests. Test details
+[![codecov](https://codecov.io/gh/EscolaLMS/CSV-Users/branch/main/graph/badge.svg?token=NRAN4R8AGZ)](https://codecov.io/gh/EscolaLMS/CSV-Users)
+[![phpunit](https://github.com/EscolaLMS/CSV-Users/actions/workflows/test.yml/badge.svg)](https://github.com/EscolaLMS/CSV-Users/actions/workflows/test.yml)
+
+## Events 
+
+- `EscolaLms\CsvUsers\Events\EscolaLmsImportedNewUserTemplateEvent` => Event is dispatched after importing a new user.
+
+## How to use this on frontend
+
+### Admin panel
+
+**Import and export button**
+![Import / export button](docs/buttons.png "Import / export button")
+
+## Permissions
+
+Permissions are defined in [seeder](database/seeders/CsvUsersPermissionSeeder.php)
