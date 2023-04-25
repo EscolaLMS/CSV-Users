@@ -92,6 +92,64 @@ class ExportUsersToCsvTest extends TestCase
         });
     }
 
+    public function testCustomExporting(): void
+    {
+        $name = $this->faker->firstName;
+
+        $user = $this->makeStudent([
+            'first_name' => $name,
+        ]);
+
+        $user2 = $this->makeStudent();
+
+        $admin = $this->makeAdmin([
+            'first_name' => $name
+        ]);
+
+
+        $response = $this->actingAs($admin, 'api')->json('GET', '/api/admin/csv/users', [
+            'format' => 'not_existing_format',
+        ]);
+
+        $response->assertUnprocessable();
+
+        $response = $this->actingAs($admin, 'api')->json('GET', '/api/admin/csv/users', [
+            'format' => 'csv',
+        ]);
+
+        $response->assertOk();
+
+        Excel::assertDownloaded('users.csv', function (UsersExport $export) use ($user, $user2, $admin) {
+            return $export->collection()->contains('email', $user->email)
+                && $export->collection()->contains('email', $user2->email)
+                && $export->collection()->contains('email', $admin->email);
+        });
+
+        $response = $this->actingAs($admin, 'api')->json('GET', '/api/admin/csv/users', [
+            'format' => 'xlsx',
+        ]);
+
+        $response->assertOk();
+
+        Excel::assertDownloaded('users.csv', function (UsersExport $export) use ($user, $user2, $admin) {
+            return $export->collection()->contains('email', $user->email)
+                && $export->collection()->contains('email', $user2->email)
+                && $export->collection()->contains('email', $admin->email);
+        });
+
+        $response = $this->actingAs($admin, 'api')->json('GET', '/api/admin/csv/users', [
+            'format' => 'xls',
+        ]);
+
+        $response->assertOk();
+
+        Excel::assertDownloaded('users.csv', function (UsersExport $export) use ($user, $user2, $admin) {
+            return $export->collection()->contains('email', $user->email)
+                && $export->collection()->contains('email', $user2->email)
+                && $export->collection()->contains('email', $admin->email);
+        });
+    }
+
     public function testExportUsersToCsvWithAdditionalFields(): void
     {
         ModelFields::addOrUpdateMetadataField(
