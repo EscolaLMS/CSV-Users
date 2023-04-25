@@ -34,6 +34,15 @@ interface CsvUserAPISwagger
      *          description="user role"
      *      ),
      *     @OA\Parameter(
+     *          name="format",
+     *          required=false,
+     *          in="query",
+     *          @OA\Schema(
+     *              type="string",
+     *          ),
+     *          description="exported file format"
+     *      ),
+     *     @OA\Parameter(
      *          name="status",
      *          required=false,
      *          in="query",

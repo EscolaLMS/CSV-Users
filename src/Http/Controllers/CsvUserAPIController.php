@@ -4,6 +4,7 @@ namespace EscolaLms\CsvUsers\Http\Controllers;
 
 use EscolaLms\Auth\Dtos\UserFilterCriteriaDto;
 use EscolaLms\Core\Http\Controllers\EscolaLmsBaseController;
+use EscolaLms\CsvUsers\Enums\ExportFormatEnum;
 use EscolaLms\CsvUsers\Export\UsersExport;
 use EscolaLms\CsvUsers\Http\Controllers\Swagger\CsvUserAPISwagger;
 use EscolaLms\CsvUsers\Http\Requests\ExportUsersToCsvAPIRequest;
@@ -26,10 +27,12 @@ class CsvUserAPIController extends EscolaLmsBaseController implements CsvUserAPI
     public function export(ExportUsersToCsvAPIRequest $request): BinaryFileResponse
     {
         $userFilterDto = UserFilterCriteriaDto::instantiateFromRequest($request);
+        $format = ExportFormatEnum::fromValue($request->input('format', ExportFormatEnum::CSV));
 
         return Excel::download(
             new UsersExport($this->csvUserService->getDataToExport($userFilterDto)),
-            'users.csv'
+            $format->getFilename(),
+            $format->getWriterType()
         );
     }
 
