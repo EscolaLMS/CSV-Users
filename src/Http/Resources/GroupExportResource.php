@@ -9,6 +9,7 @@ use Illuminate\Http\Resources\Json\JsonResource;
 class GroupExportResource extends JsonResource
 {
     use ResourceExtandable;
+
     public function __construct(Group $group)
     {
         parent::__construct($group);

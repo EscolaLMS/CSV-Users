@@ -18,6 +18,7 @@ class UserGroupExport implements FromCollection, WithHeadings
     private array $groupKeys = [];
     private array $usersArray;
     private Group $group;
+
     public function __construct(Group $group)
     {
         $this->group = $group;

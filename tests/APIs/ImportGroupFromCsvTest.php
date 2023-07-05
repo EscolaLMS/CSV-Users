@@ -54,7 +54,7 @@ class ImportGroupFromCsvTest extends TestCase
         ]);
         $response->assertForbidden();
 
-        $tutor->givePermissionTo(CsvUserPermissionsEnum::CSV_GROUP_IMPORT);
+        $tutor->givePermissionTo(CsvUserPermissionsEnum::CSV_USER_GROUP_IMPORT);
 
         $response = $this->actingAs($tutor, 'api')->postJson('/api/admin/csv/groups', [
             'file' => UploadedFile::fake()->create('group.csv'),
