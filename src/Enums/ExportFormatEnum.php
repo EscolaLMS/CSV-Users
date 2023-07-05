@@ -11,12 +11,12 @@ class ExportFormatEnum extends BasicEnum
     const XLS = 'xls';
     const XLSX = 'xlsx';
 
-    public function getFilename(): string
+    public function getFilename(string $basename): string
     {
         return match ($this->value) {
-            self::XLS => 'users.xls',
-            self::XLSX => 'users.xlsx',
-            default => 'users.csv',
+            self::XLS => $basename . '.xls',
+            self::XLSX => $basename . '.xlsx',
+            default =>  $basename . '.csv',
         };
     }
 
