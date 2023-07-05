@@ -16,10 +16,14 @@ class CsvUsersPermissionSeeder extends Seeder
 
         Permission::findOrCreate(CsvUserPermissionsEnum::CSV_USERS_EXPORT, 'api');
         Permission::findOrCreate(CsvUserPermissionsEnum::CSV_USERS_IMPORT, 'api');
+        Permission::findOrCreate(CsvUserPermissionsEnum::CSV_USER_GROUP_EXPORT, 'api');
+        Permission::findOrCreate(CsvUserPermissionsEnum::CSV_USER_GROUP_IMPORT, 'api');
 
         $admin->givePermissionTo([
             CsvUserPermissionsEnum::CSV_USERS_EXPORT,
-            CsvUserPermissionsEnum::CSV_USERS_IMPORT
+            CsvUserPermissionsEnum::CSV_USERS_IMPORT,
+            CsvUserPermissionsEnum::CSV_USER_GROUP_EXPORT,
+            CsvUserPermissionsEnum::CSV_USER_GROUP_IMPORT,
         ]);
     }
 }

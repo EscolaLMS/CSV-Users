@@ -2,14 +2,14 @@
 
 namespace EscolaLms\CsvUsers\Http\Requests;
 
-use EscolaLms\CsvUsers\Models\Group;
+use EscolaLms\CsvUsers\Models\User;
 use Illuminate\Foundation\Http\FormRequest;
 
-class ImportUsersFromCsvAPIRequest extends FormRequest
+class ImportGroupFromCsvAPIRequest extends FormRequest
 {
     public function authorize(): bool
     {
-        return $this->user()->can('import', Group::class);
+        return $this->user()->can('import', User::class);
     }
 
     public function rules(): array
