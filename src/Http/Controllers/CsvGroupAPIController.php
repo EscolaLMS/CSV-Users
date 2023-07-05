@@ -7,8 +7,8 @@ use EscolaLms\Core\Http\Controllers\EscolaLmsBaseController;
 use EscolaLms\CsvUsers\Enums\ExportFormatEnum;
 use EscolaLms\CsvUsers\Export\UserGroupExport;
 use EscolaLms\CsvUsers\Http\Controllers\Swagger\CsvGroupAPISwagger;
-use EscolaLms\CsvUsers\Http\Requests\ExportGroupToCsvAPIRequest;
-use EscolaLms\CsvUsers\Http\Requests\ImportUsersFromCsvAPIRequest;
+use EscolaLms\CsvUsers\Http\Requests\ExportUserGroupToCsvAPIRequest;
+use EscolaLms\CsvUsers\Http\Requests\ImportUserGroupFromCsvAPIRequest;
 use EscolaLms\CsvUsers\Import\UserGroupImport;
 use EscolaLms\CsvUsers\Services\Contracts\CsvUserServiceContract;
 use Illuminate\Http\JsonResponse;
@@ -24,7 +24,7 @@ class CsvGroupAPIController extends EscolaLmsBaseController implements CsvGroupA
         $this->csvUserService = $csvUserService;
     }
 
-    public function export(ExportGroupToCsvAPIRequest $request): BinaryFileResponse
+    public function export(ExportUserGroupToCsvAPIRequest $request): BinaryFileResponse
     {
         $userFilterDto = UserFilterCriteriaDto::instantiateFromRequest($request);
         $format = ExportFormatEnum::fromValue($request->input('format', ExportFormatEnum::CSV));
@@ -36,7 +36,7 @@ class CsvGroupAPIController extends EscolaLmsBaseController implements CsvGroupA
         );
     }
 
-    public function import(ImportUsersFromCsvAPIRequest $request): JsonResponse
+    public function import(ImportUserGroupFromCsvAPIRequest $request): JsonResponse
     {
         Excel::import(new UserGroupImport($request->input('return_url')), $request->file('file'));
 

@@ -2,8 +2,8 @@
 
 namespace EscolaLms\CsvUsers\Http\Controllers\Swagger;
 
-use EscolaLms\CsvUsers\Http\Requests\ExportGroupToCsvAPIRequest;
-use EscolaLms\CsvUsers\Http\Requests\ImportUsersFromCsvAPIRequest;
+use EscolaLms\CsvUsers\Http\Requests\ExportUserGroupToCsvAPIRequest;
+use EscolaLms\CsvUsers\Http\Requests\ImportUserGroupFromCsvAPIRequest;
 
 interface CsvGroupAPISwagger
 {
@@ -40,7 +40,7 @@ interface CsvGroupAPISwagger
      *      )
      *   )
      */
-    public function export(ExportGroupToCsvAPIRequest $request);
+    public function export(ExportUserGroupToCsvAPIRequest $request);
 
     /**
      * @OA\Post(
@@ -88,5 +88,5 @@ interface CsvGroupAPISwagger
      *      ),
      * )
      */
-    public function import(ImportUsersFromCsvAPIRequest $request);
+    public function import(ImportUserGroupFromCsvAPIRequest $request);
 }

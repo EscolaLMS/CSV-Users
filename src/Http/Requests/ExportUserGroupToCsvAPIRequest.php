@@ -7,7 +7,7 @@ use EscolaLms\CsvUsers\Models\Group;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
 
-class ExportGroupToCsvAPIRequest extends FormRequest
+class ExportUserGroupToCsvAPIRequest extends FormRequest
 {
     public function authorize(): bool
     {

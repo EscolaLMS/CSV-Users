@@ -67,7 +67,7 @@ class ImportGroupFromCsvTest extends TestCase
 
     public function testGroupImport(): void
     {
-        GroupUser::query()->truncate();
+        GroupUser::query()->delete();
 
         $importData = $this->prepareImportData();
         $admin = $this->makeAdmin();
