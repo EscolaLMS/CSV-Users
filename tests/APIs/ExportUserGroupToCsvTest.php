@@ -53,7 +53,7 @@ class ExportUserGroupToCsvTest extends TestCase
         $response = $this->actingAs($admin, 'api')->json('get', '/api/admin/csv/groups/' . $group->getKey());
         $response->assertOk();
 
-        Excel::assertDownloaded('users.csv', function (UserGroupExport $export) use ($group, $user1, $user2) {
+        Excel::assertDownloaded('group.csv', function (UserGroupExport $export) use ($group, $user1, $user2) {
             return $export->collection()->contains('email', $user1->email)
                 && $export->collection()->contains('email', $user2->email)
                 && $export->collection()->contains('group_name', $group->name);
