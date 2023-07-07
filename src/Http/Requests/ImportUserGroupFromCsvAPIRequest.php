@@ -15,7 +15,7 @@ class ImportUserGroupFromCsvAPIRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'file' => ['required', 'mimes:csv,txt'],
+            'file' => ['required', 'mimes:csv,txt,xlsx,xls'],
             'return_url' => ['required', 'string'],
         ];
     }
