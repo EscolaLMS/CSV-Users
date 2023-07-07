@@ -5,6 +5,94 @@
         "version": "0.0.1"
     },
     "paths": {
+        "/api/admin/csv/groups/group_id": {
+            "get": {
+                "tags": [
+                    "Admin CSV"
+                ],
+                "description": "Exports users to csv",
+                "operationId": "a54633b0e0ef2e550825f8e61cdb1470",
+                "parameters": [
+                    {
+                        "name": "format",
+                        "in": "query",
+                        "description": "exported file format",
+                        "required": false,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "successful operation",
+                        "content": {
+                            "application/csv": {}
+                        }
+                    },
+                    "422": {
+                        "description": "Bad request",
+                        "content": {
+                            "application/json": {}
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "passport": []
+                    }
+                ]
+            }
+        },
+        "/api/admin/csv/groups": {
+            "post": {
+                "tags": [
+                    "Admin CSV"
+                ],
+                "description": "Imports group from csv",
+                "operationId": "28e0a01aca9cc932349e9c1ce370e712",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "multipart/form-data": {
+                            "schema": {
+                                "properties": {
+                                    "file": {
+                                        "type": "file",
+                                        "format": "file"
+                                    },
+                                    "return_url": {
+                                        "description": "Address where the new user set the password",
+                                        "type": "string",
+                                        "example": "https://escolalms.com/set-password"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "successful operation"
+                    },
+                    "401": {
+                        "description": "endpoint requires authentication"
+                    },
+                    "403": {
+                        "description": "user doesn't have required access rights"
+                    },
+                    "500": {
+                        "description": "server-side error"
+                    }
+                },
+                "security": [
+                    {
+                        "passport": []
+                    }
+                ]
+            }
+        },
         "/api/admin/csv/users": {
             "get": {
                 "tags": [
