@@ -67,18 +67,30 @@ class ImportUsersFromCsvTest extends TestCase
         Excel::assertImported('users.csv');
     }
 
-    public function testUsersImport(): void
+    public function fileFormatProvider(): array
+    {
+        return [
+            'csv' => ['users.csv'],
+            'xlsx' => ['users.xlsx'],
+            'xls' => ['users.xls'],
+        ];
+    }
+
+    /**
+     * @dataProvider fileFormatProvider
+     */
+    public function testUsersImport(string $value): void
     {
         $importData = $this->prepareImportData();
 
         $admin = $this->makeAdmin();
         $response = $this->actingAs($admin, 'api')->postJson('/api/admin/csv/users', [
-            'file' => UploadedFile::fake()->create('users.csv'),
+            'file' => UploadedFile::fake()->create($value),
             'return_url' => 'http://localhost/set-password',
         ]);
         $response->assertOk();
 
-        Excel::assertImported('users.csv', function (UsersImport $import) use ($importData) {
+        Excel::assertImported($value, function (UsersImport $import) use ($importData) {
             $import->collection($importData);
             return true;
         });
