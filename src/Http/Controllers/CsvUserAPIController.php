@@ -31,7 +31,7 @@ class CsvUserAPIController extends EscolaLmsBaseController implements CsvUserAPI
 
         return Excel::download(
             new UsersExport($this->csvUserService->getDataToExport($userFilterDto)),
-            $format->getFilename(),
+            $format->getFilename('users'),
             $format->getWriterType()
         );
     }

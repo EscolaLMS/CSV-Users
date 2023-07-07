@@ -61,6 +61,7 @@ class ImportUsersFromCsvTest extends TestCase
             'file' => UploadedFile::fake()->create('users.csv'),
             'return_url' => 'http://localhost/set-password',
         ]);
+
         $response->assertOk();
 
         Excel::assertImported('users.csv');
