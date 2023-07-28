@@ -59,7 +59,8 @@ class ExportUsersToCsvTest extends TestCase
         Excel::assertDownloaded('users.csv', function (UsersExport $export) use ($user, $user2, $admin) {
             return $export->collection()->contains('email', $user->email)
                 && $export->collection()->contains('email', $user2->email)
-                && $export->collection()->contains('email', $admin->email);
+                && $export->collection()->contains('email', $admin->email)
+                && $export->collection()->contains('password', '');
         });
 
         $response = $this->actingAs($admin, 'api')->getJson('/api/admin/csv/users/?search=' . $user->email);

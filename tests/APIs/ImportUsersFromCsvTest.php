@@ -17,6 +17,7 @@ use Illuminate\Foundation\Testing\WithFaker;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Event;
+use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Notification;
 use Illuminate\Support\Facades\Validator;
 use Maatwebsite\Excel\Facades\Excel;
@@ -96,6 +97,7 @@ class ImportUsersFromCsvTest extends TestCase
         });
 
         $importData->each(function ($user) {
+
             $this->assertDatabaseHas('users', [
                 'email' => $user->get('email'),
                 'first_name' => $user->get('first_name'),
@@ -107,6 +109,19 @@ class ImportUsersFromCsvTest extends TestCase
             $this->assertEqualsCanonicalizing($dbUser->roles->pluck('name')->toArray(), $user->get('roles'));
             $this->assertEqualsCanonicalizing($dbUser->permissions->pluck('name')->toArray(), $user->get('permissions'));
         });
+
+        $this->assertDatabaseHas('users', [
+           'email' => 'test_user1@test.test',
+           'password' => null,
+        ]);
+
+        $this->assertDatabaseHas('users', [
+           'email' => 'test_user2@test.test',
+           'password' => null,
+        ]);
+
+        $user = User::query()->where('email', 'test_user3@test.test')->first();
+        Hash::check('password', $user->password);
     }
 
     public function testUsersImportValidation(): void
@@ -234,14 +249,32 @@ class ImportUsersFromCsvTest extends TestCase
         ]);
 
         $studentData = collect([
-            'email' => $this->faker->email,
+            'email' => 'test_user1@test.test',
             'first_name' => $this->faker->firstName,
             'last_name' => $this->faker->lastName,
             'roles' => json_encode([UserRole::STUDENT, UserRole::TUTOR]),
             'permissions' => json_encode([CsvUserPermissionsEnum::CSV_USERS_IMPORT]),
         ]);
 
-        $importData = collect([$adminData, $studentData]);
+        $studentData2 = collect([
+            'email' => 'test_user2@test.test',
+            'password' => '',
+            'first_name' => $this->faker->firstName,
+            'last_name' => $this->faker->lastName,
+            'roles' => json_encode([UserRole::STUDENT, UserRole::TUTOR]),
+            'permissions' => json_encode([CsvUserPermissionsEnum::CSV_USERS_IMPORT]),
+        ]);
+
+        $studentData3 = collect([
+            'email' => 'test_user3@test.test',
+            'password' => 'password',
+            'first_name' => $this->faker->firstName,
+            'last_name' => $this->faker->lastName,
+            'roles' => json_encode([UserRole::STUDENT, UserRole::TUTOR]),
+            'permissions' => json_encode([CsvUserPermissionsEnum::CSV_USERS_IMPORT]),
+        ]);
+
+        $importData = collect([$adminData, $studentData, $studentData2, $studentData3]);
 
         for ($i = 0; $i < $this->faker->numberBetween(1, 10); $i++) {
             $importData->push(collect([
