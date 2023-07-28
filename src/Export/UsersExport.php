@@ -3,6 +3,7 @@
 namespace EscolaLms\CsvUsers\Export;
 
 use EscolaLms\Auth\Http\Resources\UserFullResource;
+use EscolaLms\CsvUsers\Http\Resources\UserExportResource;
 use Illuminate\Support\Collection;
 use Maatwebsite\Excel\Concerns\FromCollection;
 use Maatwebsite\Excel\Concerns\WithHeadings;
@@ -15,7 +16,7 @@ class UsersExport implements FromCollection, WithHeadings
 
     public function __construct(Collection $users)
     {
-        $this->usersArray = json_decode(UserFullResource::collection($users)->toJson(), true);
+        $this->usersArray = json_decode(UserExportResource::collection($users)->toJson(), true);
 
         foreach ($this->usersArray as $user) {
             $this->keys = array_merge($this->keys, array_keys($user));

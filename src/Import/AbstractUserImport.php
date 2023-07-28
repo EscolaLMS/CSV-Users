@@ -21,6 +21,7 @@ abstract class AbstractUserImport
     {
         return [
             '*.email' => 'required',
+            '*.password' => ['sometimes', 'string', 'min:6'],
             '*.first_name' => 'required',
             '*.last_name' => 'required',
             '*.roles' => ['nullable', 'array'],
@@ -51,6 +52,12 @@ abstract class AbstractUserImport
                 ? $item->get('path_avatar')
                 : null
             );
+
+            if($item->get('password')) {
+                $item->put('password', $item->get('password'));
+            } else {
+                $item->forget('password');
+            }
 
             return $item;
         });

@@ -10,6 +10,7 @@ use EscolaLms\CsvUsers\Services\Contracts\CsvUserServiceContract;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Config;
+use Illuminate\Support\Facades\Hash;
 
 class CsvUserService implements CsvUserServiceContract
 {
@@ -31,6 +32,11 @@ class CsvUserService implements CsvUserServiceContract
             $user = $this->userRepository->update($data->toArray(), $user->getKey());
         } else {
             $data->put('is_active', true);
+
+            if ($data->get('password')) {
+                $data->put('password', Hash::make($data->get('password')));
+            }
+
             $user = $this->userRepository->create($data->toArray());
             $user->markEmailAsVerified();
             event(new EscolaLmsImportedNewUserTemplateEvent($user, $returnUrl));
