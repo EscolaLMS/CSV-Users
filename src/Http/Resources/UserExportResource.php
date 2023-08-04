@@ -2,23 +2,16 @@
 
 namespace EscolaLms\CsvUsers\Http\Resources;
 
-use EscolaLms\Auth\Traits\ResourceExtandable;
-use EscolaLms\CsvUsers\Models\Group;
-use EscolaLms\CsvUsers\Models\User;
+use EscolaLms\Auth\Models\User;
 use EscolaLms\ModelFields\Enum\MetaFieldVisibilityEnum;
 use EscolaLms\ModelFields\Facades\ModelFields;
 use Illuminate\Http\Resources\Json\JsonResource;
 
 class UserExportResource extends JsonResource
 {
-    public function __construct(User $group)
+    public function __construct(User $user)
     {
-        parent::__construct($group);
-    }
-
-    public function getResource(): Group
-    {
-        return $this->resource;
+        parent::__construct($user);
     }
 
     public function toArray($request): array
