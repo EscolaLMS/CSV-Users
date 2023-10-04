@@ -5,8 +5,6 @@ namespace EscolaLms\CsvUsers\Import;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Validator;
-use Maatwebsite\Excel\Concerns\ToCollection;
-use Maatwebsite\Excel\Concerns\WithHeadingRow;
 
 abstract class AbstractUserImport
 {
@@ -28,21 +26,19 @@ abstract class AbstractUserImport
             '*.roles.*' => ['exists:roles,name'],
             '*.permissions' => ['nullable', 'array'],
             '*.permissions.*' => ['exists:permissions,name'],
+            '*.groups' => ['array'],
+            '*.groups.*' => ['string:255'],
         ];
     }
 
     protected function prepareDataToImport(Collection $data): Collection
     {
-        return $data->map(function ($item) {
-            $item->put('roles', $item->get('roles') !== null
-                ? json_decode($item->get('roles'), true)
-                : []
-            );
+        $arrayKeys = ['roles', 'permissions', 'groups'];
 
-            $item->put('permissions', $item->get('permissions') !== null
-                ? json_decode($item->get('permissions'), true)
-                : []
-            );
+        return $data->map(function ($item) use ($arrayKeys) {
+            foreach ($arrayKeys as $key) {
+                $item->put($key, json_decode($item->get($key, '[]'), true));
+            }
 
             $item->put('is_active', $item->get('is_active') ?? false);
             $item->forget('created_at');
@@ -53,7 +49,7 @@ abstract class AbstractUserImport
                 : null
             );
 
-            if($item->get('password')) {
+            if ($item->get('password')) {
                 $item->put('password', $item->get('password'));
             } else {
                 $item->forget('password');

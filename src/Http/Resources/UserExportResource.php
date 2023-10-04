@@ -27,9 +27,8 @@ class UserExportResource extends JsonResource
                 'is_active' => $this->resource->is_active,
                 'created_at' => $this->resource->created_at,
                 'email_verified' => $this->resource->email_verified,
-                'roles' => $this->resource->roles ? array_map(function ($role) {
-                    return $role['name'];
-                }, $this->resource->roles->toArray()) : [],
+                'roles' => $this->resource->roles->pluck('name'),
+                'groups' => $this->resource->groups->pluck('name'),
             ],
             ModelFields::getExtraAttributesValues($this->resource, MetaFieldVisibilityEnum::ADMIN),
             ModelFields::getExtraAttributesValues($this->resource, MetaFieldVisibilityEnum::PUBLIC),
