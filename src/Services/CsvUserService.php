@@ -3,13 +3,13 @@
 namespace EscolaLms\CsvUsers\Services;
 
 use EscolaLms\Auth\Dtos\UserFilterCriteriaDto;
-use EscolaLms\Auth\EscolaLmsAuthServiceProvider;
+use EscolaLms\Auth\Models\Group;
+use EscolaLms\Auth\Models\User;
 use EscolaLms\Auth\Repositories\Contracts\UserRepositoryContract;
 use EscolaLms\CsvUsers\Events\EscolaLmsImportedNewUserTemplateEvent;
 use EscolaLms\CsvUsers\Services\Contracts\CsvUserServiceContract;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Collection;
-use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\Hash;
 
 class CsvUserService implements CsvUserServiceContract
@@ -44,7 +44,19 @@ class CsvUserService implements CsvUserServiceContract
 
         $user->syncRoles($data->get('roles'));
         $user->syncPermissions($data->get('permissions'));
+        $this->syncGroups($user, $data->get('groups'));
 
         return $user;
+    }
+
+    private function syncGroups(User $user, array $groupNames): void
+    {
+        foreach ($groupNames as $name) {
+            $group = Group::firstOrCreate([
+                'name' => $name,
+            ]);
+
+            $group->users()->syncWithoutDetaching($user);
+        }
     }
 }

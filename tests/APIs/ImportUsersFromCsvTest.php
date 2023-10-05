@@ -2,6 +2,7 @@
 
 namespace EscolaLms\CsvUsers\Tests\APIs;
 
+use EscolaLms\Auth\Models\Group;
 use EscolaLms\Auth\Models\User as AuthUser;
 use EscolaLms\Core\Enums\UserRole;
 use EscolaLms\Core\Tests\CreatesUsers;
@@ -108,6 +109,7 @@ class ImportUsersFromCsvTest extends TestCase
             $this->assertNotNull($dbUser->created_at);
             $this->assertEqualsCanonicalizing($dbUser->roles->pluck('name')->toArray(), $user->get('roles'));
             $this->assertEqualsCanonicalizing($dbUser->permissions->pluck('name')->toArray(), $user->get('permissions'));
+            $this->assertEqualsCanonicalizing($dbUser->groups->pluck('name')->toArray(), $user->get('groups'));
         });
 
         $this->assertDatabaseHas('users', [
@@ -122,6 +124,7 @@ class ImportUsersFromCsvTest extends TestCase
 
         $user = User::query()->where('email', 'test_user3@test.test')->first();
         Hash::check('password', $user->password);
+        $this->assertDatabaseCount('groups', 3);
     }
 
     public function testUsersImportValidation(): void
@@ -240,12 +243,14 @@ class ImportUsersFromCsvTest extends TestCase
     private function prepareImportData(): Collection
     {
         $admin = $this->makeAdmin();
+        $existingGroup = Group::factory()->state(['name' => 'existing name'])->create();
 
         $adminData = collect([
             'email' => $admin->email,
             'first_name' => $this->faker->firstName,
             'last_name' => $this->faker->lastName,
             'roles' => json_encode($admin->roles->pluck('name')),
+            'groups' => json_encode(['new group 1']),
         ]);
 
         $studentData = collect([
@@ -254,6 +259,7 @@ class ImportUsersFromCsvTest extends TestCase
             'last_name' => $this->faker->lastName,
             'roles' => json_encode([UserRole::STUDENT, UserRole::TUTOR]),
             'permissions' => json_encode([CsvUserPermissionsEnum::CSV_USERS_IMPORT]),
+            'groups' => json_encode(['new group 1']),
         ]);
 
         $studentData2 = collect([
@@ -263,6 +269,7 @@ class ImportUsersFromCsvTest extends TestCase
             'last_name' => $this->faker->lastName,
             'roles' => json_encode([UserRole::STUDENT, UserRole::TUTOR]),
             'permissions' => json_encode([CsvUserPermissionsEnum::CSV_USERS_IMPORT]),
+            'groups' => json_encode(['new group 2']),
         ]);
 
         $studentData3 = collect([
@@ -272,6 +279,7 @@ class ImportUsersFromCsvTest extends TestCase
             'last_name' => $this->faker->lastName,
             'roles' => json_encode([UserRole::STUDENT, UserRole::TUTOR]),
             'permissions' => json_encode([CsvUserPermissionsEnum::CSV_USERS_IMPORT]),
+            'groups' => json_encode([$existingGroup->name]),
         ]);
 
         $importData = collect([$adminData, $studentData, $studentData2, $studentData3]);
