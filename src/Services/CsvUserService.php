@@ -44,7 +44,7 @@ class CsvUserService implements CsvUserServiceContract
 
         $user->syncRoles($data->get('roles'));
         $user->syncPermissions($data->get('permissions'));
-        $this->syncGroups($user, $data->get('groups'));
+        $this->syncGroups($user, $data->get('groups') ?? []);
 
         return $user;
     }
