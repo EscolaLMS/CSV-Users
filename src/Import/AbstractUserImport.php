@@ -37,7 +37,7 @@ abstract class AbstractUserImport
 
         return $data->map(function ($item) use ($arrayKeys) {
             foreach ($arrayKeys as $key) {
-                $item->put($key, json_decode($item->get($key, '[]'), true));
+                $item->put($key, json_decode($item->get($key), true) ?? []);
             }
 
             $item->put('is_active', $item->get('is_active') ?? false);
