@@ -35,14 +35,19 @@ abstract class AbstractUserImport
     {
         $arrayKeys = ['roles', 'permissions', 'groups'];
 
-        return $data->map(function ($item) use ($arrayKeys) {
+        return $data
+            ->reject(function (Collection $item) { // Workaround for some excel files that have empty rows because of editing
+                return $item->every(function (?string $value) {
+                    return is_null($value);
+                });
+            })
+            ->map(function (Collection $item) use ($arrayKeys) {
             foreach ($arrayKeys as $key) {
                 $item->put($key, json_decode($item->get($key, '[]'), true));
             }
 
             $item->put('is_active', $item->get('is_active') ?? false);
-            $item->forget('created_at');
-            $item->forget('updated_at');
+            $item->forget(['created_at', 'updated_at']);
 
             $item->put('path_avatar', $item->get('path_avatar') !== null && Storage::exists($item->get('path_avatar'))
                 ? $item->get('path_avatar')
@@ -54,7 +59,6 @@ abstract class AbstractUserImport
             } else {
                 $item->forget('password');
             }
-
             return $item;
         });
     }

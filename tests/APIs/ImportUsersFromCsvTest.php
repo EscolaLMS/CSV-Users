@@ -84,7 +84,6 @@ class ImportUsersFromCsvTest extends TestCase
     public function testUsersImport(string $value): void
     {
         $importData = $this->prepareImportData();
-
         $admin = $this->makeAdmin();
         $response = $this->actingAs($admin, 'api')->postJson('/api/admin/csv/users', [
             'file' => UploadedFile::fake()->create($value),
@@ -125,6 +124,29 @@ class ImportUsersFromCsvTest extends TestCase
         $user = User::query()->where('email', 'test_user3@test.test')->first();
         Hash::check('password', $user->password);
         $this->assertDatabaseCount('groups', 3);
+    }
+
+    public function testUsersImportWithEmptyRows(): void
+    {
+        $importData = $this->prepareImportData();
+        $importData->prepend(collect([
+            "email" => null,
+            "first_name" => null,
+            "last_name" => null,
+        ]));
+
+        $admin = $this->makeAdmin();
+        $response = $this->actingAs($admin, 'api')->postJson('/api/admin/csv/users', [
+            'file' => UploadedFile::fake()->create('users.xlsx'),
+            'return_url' => 'http://localhost/set-password',
+        ]);
+
+        $response->assertOk();
+
+        Excel::assertImported('users.xlsx', function (UsersImport $import) use ($importData) {
+            $import->collection($importData);
+            return true;
+        });
     }
 
     public function testUsersImportValidation(): void
