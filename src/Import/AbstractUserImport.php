@@ -43,22 +43,25 @@ abstract class AbstractUserImport
             })
             ->map(function (Collection $item) use ($arrayKeys) {
             foreach ($arrayKeys as $key) {
-                $item->put($key, json_decode($item->get($key, '[]'), true));
+                $item->put($key, json_decode($item->get($key), true) ?? []);
             }
 
             $item->put('is_active', $item->get('is_active') ?? false);
             $item->forget(['created_at', 'updated_at']);
 
-            $item->put('path_avatar', $item->get('path_avatar') !== null && Storage::exists($item->get('path_avatar'))
-                ? $item->get('path_avatar')
-                : null
-            );
+            if ($item->has('path_avatar')) {
+                $item->put('path_avatar', $item->get('path_avatar') !== null && Storage::exists($item->get('path_avatar'))
+                    ? $item->get('path_avatar')
+                    : null
+                );
+            }
 
             if ($item->get('password')) {
                 $item->put('password', $item->get('password'));
             } else {
                 $item->forget('password');
             }
+
             return $item;
         });
     }

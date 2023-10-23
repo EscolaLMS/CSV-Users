@@ -27,6 +27,7 @@ class UserExportResource extends JsonResource
                 'is_active' => $this->resource->is_active,
                 'created_at' => $this->resource->created_at,
                 'email_verified' => $this->resource->email_verified,
+                'path_avatar' => $this->resource->path_avatar,
                 'roles' => $this->resource->roles->pluck('name'),
                 'groups' => $this->resource->groups->pluck('name'),
             ],
