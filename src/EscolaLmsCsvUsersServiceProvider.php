@@ -7,6 +7,7 @@ use EscolaLms\CsvUsers\Services\Contracts\CsvUserServiceContract;
 use EscolaLms\CsvUsers\Services\CsvUserGroupService;
 use EscolaLms\CsvUsers\Services\CsvUserService;
 use Illuminate\Support\ServiceProvider;
+use Maatwebsite\Excel\Imports\HeadingRowFormatter;
 
 /**
  * SWAGGER_VERSION
@@ -22,6 +23,8 @@ class EscolaLmsCsvUsersServiceProvider extends ServiceProvider
     {
         $this->loadRoutesFrom(__DIR__.'/routes.php');
         $this->loadTranslationsFrom(__DIR__ . '/../resources/lang', 'csv-users');
+
+        HeadingRowFormatter::default('none');
     }
 
     public function register()
