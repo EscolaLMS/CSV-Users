@@ -4,12 +4,11 @@ namespace EscolaLms\CsvUsers\Import;
 
 use EscolaLms\CsvUsers\Services\Contracts\CsvUserServiceContract;
 use Illuminate\Support\Collection;
-use Illuminate\Support\Facades\Storage;
-use Illuminate\Support\Facades\Validator;
+use Maatwebsite\Excel\Concerns\SkipsEmptyRows;
 use Maatwebsite\Excel\Concerns\ToCollection;
 use Maatwebsite\Excel\Concerns\WithHeadingRow;
 
-class UsersImport extends AbstractUserImport implements ToCollection, WithHeadingRow
+class UsersImport extends AbstractUserImport implements ToCollection, WithHeadingRow, SkipsEmptyRows
 {
     public function __construct(string $returnUrl)
     {
