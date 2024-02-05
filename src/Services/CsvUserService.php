@@ -28,15 +28,14 @@ class CsvUserService implements CsvUserServiceContract
 
     public function saveUserFromImport(Collection $data, string $returnUrl): Model
     {
+        if ($data->get('password')) {
+            $data->put('password', Hash::make($data->get('password')));
+        }
+
         if ($user = $this->userRepository->findByEmail($data->get('email'))) {
             $user = $this->userRepository->update($data->toArray(), $user->getKey());
         } else {
             $data->put('is_active', true);
-
-            if ($data->get('password')) {
-                $data->put('password', Hash::make($data->get('password')));
-            }
-
             $user = $this->userRepository->create($data->toArray());
             $user->markEmailAsVerified();
             event(new EscolaLmsImportedNewUserTemplateEvent($user, $returnUrl));

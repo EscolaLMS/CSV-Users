@@ -5,6 +5,7 @@ namespace EscolaLms\CsvUsers\Import;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Validator;
+use Maatwebsite\Excel\Imports\HeadingRowFormatter;
 
 abstract class AbstractUserImport
 {
@@ -12,6 +13,7 @@ abstract class AbstractUserImport
 
     public function __construct(string $returnUrl)
     {
+        HeadingRowFormatter::default('none');
         $this->returnUrl = $returnUrl;
     }
 
