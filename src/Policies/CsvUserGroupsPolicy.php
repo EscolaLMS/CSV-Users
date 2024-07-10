@@ -4,8 +4,8 @@ namespace EscolaLms\CsvUsers\Policies;
 
 use EscolaLms\Core\Enums\UserRole;
 use EscolaLms\CsvUsers\Enums\CsvUserPermissionsEnum;
+use EscolaLms\CsvUsers\Models\User;
 use Illuminate\Auth\Access\HandlesAuthorization;
-use Illuminate\Foundation\Auth\User;
 
 class CsvUserGroupsPolicy
 {

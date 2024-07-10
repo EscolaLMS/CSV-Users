@@ -28,6 +28,7 @@ class UsersExport implements FromCollection, WithHeadings
     public function collection(): Collection
     {
         return collect($this->usersArray)->map(function ($user) {
+            $result = [];
             foreach ($this->keys as $key) {
                 $result[$key] = $user[$key] ?? '';
             }

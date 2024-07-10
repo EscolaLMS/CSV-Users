@@ -7,11 +7,11 @@ use Illuminate\Support\Facades\Route;
 
 Route::group(['middleware' => ['auth:api'], 'prefix' => 'api/admin/csv'], function () {
     Route::prefix('users')->group(function () {
-        Route::get(null, [CsvUserAPIController::class, 'export']);
-        Route::post(null , [CsvUserAPIController::class, 'import']);
+        Route::get('', [CsvUserAPIController::class, 'export']);
+        Route::post('' , [CsvUserAPIController::class, 'import']);
     });
     Route::prefix('groups')->group(function () {
         Route::get('{group}', [CsvGroupAPIController::class, 'export']);
-        Route::post(null , [CsvGroupAPIController::class, 'import']);
+        Route::post('' , [CsvGroupAPIController::class, 'import']);
     });
 });
