@@ -4,9 +4,9 @@ namespace EscolaLms\CsvUsers\Services;
 
 use EscolaLms\Auth\Dtos\UserFilterCriteriaDto;
 use EscolaLms\Auth\Models\Group;
-use EscolaLms\Auth\Models\User;
 use EscolaLms\Auth\Repositories\Contracts\UserRepositoryContract;
 use EscolaLms\CsvUsers\Events\EscolaLmsImportedNewUserTemplateEvent;
+use EscolaLms\CsvUsers\Models\User;
 use EscolaLms\CsvUsers\Services\Contracts\CsvUserServiceContract;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Collection;
@@ -32,10 +32,14 @@ class CsvUserService implements CsvUserServiceContract
             $data->put('password', Hash::make($data->get('password')));
         }
 
-        if ($user = $this->userRepository->findByEmail($data->get('email'))) {
+        /** @var User|null $user */
+        $user = $this->userRepository->findByEmail($data->get('email'));
+        if ($user) {
+            /** @var User $user */
             $user = $this->userRepository->update($data->toArray(), $user->getKey());
         } else {
             $data->put('is_active', true);
+            /** @var User $user */
             $user = $this->userRepository->create($data->toArray());
             $user->markEmailAsVerified();
             event(new EscolaLmsImportedNewUserTemplateEvent($user, $returnUrl));

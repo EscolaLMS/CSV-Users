@@ -2,6 +2,7 @@
 
 namespace EscolaLms\CsvUsers\Import;
 
+use EscolaLms\CsvUsers\Models\Group;
 use EscolaLms\CsvUsers\Services\Contracts\CsvUserServiceContract;
 use EscolaLms\CsvUsers\Services\CsvUserGroupService;
 use Illuminate\Support\Collection;
@@ -24,6 +25,7 @@ class UserGroupImport extends AbstractUserImport implements ToCollection, WithHe
         $rows = $this->prepareDataToImport($rows);
         $this->validateData($rows);
 
+        /** @var Group $group */
         $group = $csvGroupService->saveGroupFromImport($this->prepareGroupData($rows->first()));
 
         $users = collect();
