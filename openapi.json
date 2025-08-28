@@ -233,5 +233,11 @@
                 ]
             }
         }
-    }
+    },
+    "tags": [
+        {
+            "name": "Admin CSV",
+            "description": "Admin CSV"
+        }
+    ]
 }
